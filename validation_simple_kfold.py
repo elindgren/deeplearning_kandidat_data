@@ -6,7 +6,7 @@
 
 import time
 import numpy as np
-import normalizer as norm
+from deeplearning_kandidat_data import normalizer as norm
 
 
 def validate_nn(model_fcn=None,
