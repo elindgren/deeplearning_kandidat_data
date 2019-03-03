@@ -122,7 +122,7 @@ def validate_nn(model_fcn=None,
     if multi_input:
         print('Multi input: ' + str(multi_input))
         for key in multi_input_data:
-            print("Number of " + key + " features: " + str(multi_input_data[key.shape][1]))
+            print("Number of " + key + " features: " + str(multi_input_data[key].shape[1]))
     else:
         print("Number of features: " + str(data.shape[1]))
     print("Epochs: " + str(epochs))
