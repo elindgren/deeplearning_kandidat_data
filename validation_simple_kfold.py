@@ -53,32 +53,24 @@ def validate_nn(model_fcn=None,
         # ******* Training data ******
         if multi_input:
             # ************* Special case - multi input NN *******************
+            multi_train_data_x = {}
+            multi_val_data_x = {}
             for key in multi_input_data:
                 # shuffle data
                 multi_input_data[key] = multi_input_data[key][random_users]
                 # normalize data
                 if key == 'subtask':
-                    norm_multi_subtask = norm.normalize_tensor_data_new(data_tensor=multi_input_data[key],
+                    multi_input_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_input_data[key],
                                                              train_data_size=train_size)
                 elif key == 'exercise':
-                    norm_multi_exercise = norm.normalize_tensor_data_new(data_tensor=multi_input_data[key],
+                    multi_input_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_input_data[key],
                                                              train_data_size=train_size)
                 elif key == 'global':
-                    norm_multi_global = norm.normalize_global_data(global_data_tensor=multi_input_data[key],
+                    multi_input_data[key] = norm.normalize_global_data(global_data_tensor=multi_input_data[key],
                                                                    train_data_size=train_size)
-
-            # Split into validation set and training set
-            multi_train_data_x = {
-                'subtask': norm_multi_subtask[:train_size],
-                'exercise':  norm_multi_exercise[:train_size],
-                'global': norm_multi_global[:train_size]
-            }
-
-            multi_val_data_x = {
-                'subtask': norm_multi_subtask[train_size:],
-                'exercise':  norm_multi_exercise[train_size:],
-                'global': norm_multi_global[train_size:]
-            }
+                # Split into validation set and training set
+                multi_train_data_x[key] = multi_input_data[key][:train_size]
+                multi_val_data_x[key] = multi_input_data[key][train_size:]
         else:
             shuffled_float_data = data[random_users]
             # Normalize the now shuffled data and results matrices
