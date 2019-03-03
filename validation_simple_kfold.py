@@ -121,8 +121,8 @@ def validate_nn(model_fcn=None,
     print("Optimizer function: " + optimizer_fcn)
     if multi_input:
         print('Multi input: ' + str(multi_input))
-        print("Number of global features: " + str(multi_global.shape[1]))
-        print("Number of subtask features: " + str(multi_subtask.shape[1]))
+        for key in multi_input_data:
+            print("Number of " + key + " features: " + str(multi_input_data[key.shape][1]))
     else:
         print("Number of features: " + str(data.shape[1]))
     print("Epochs: " + str(epochs))
