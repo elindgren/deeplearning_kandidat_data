@@ -26,7 +26,7 @@ def gen_fit_data(data= [],
     # ******* Results data ******
     # Results are the same for multi input and regular input NN
     shuffled_float_results = results[random_users]
-    norm_float_results = op.normalize_results(shuffled_float_results)
+    norm_float_results = norm.normalize_results(shuffled_float_results)
     y_val = norm_float_results[train_size:]
     y_train = norm_float_results[:train_size]
 
