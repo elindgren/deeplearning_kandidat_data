@@ -76,7 +76,6 @@ def validate_nn(model_fcn=None,
             # Normalize the now shuffled data and results matrices
             if data_type == 'subtask' or data_type == 'exercise':
                 norm_float_data = norm.normalize_tensor_data_new(shuffled_float_data, train_size)
-
             elif data_type == 'global':
                 norm_float_data = norm.normalize_global_data(global_data_tensor=data, train_data_size=train_size)
             else:
