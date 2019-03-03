@@ -53,32 +53,36 @@ def validate_nn(model_fcn=None,
         # ******* Training data ******
         if multi_input:
             # ************* Special case - multi input NN *******************
-            multi_global = multi_input_data['global']
-            multi_subtask = multi_input_data['subtask']
-
-            # Shuffle data
-            shuffled_multi_global = multi_global[random_users]
-            shuffled_multi_subtask = multi_subtask[random_users]
-
-            # Normalize data
-            norm_multi_global = norm.normalize_global_data(global_data_tensor=shuffled_multi_global,
-                                                         train_data_size=train_size)
-            norm_multi_subtask = norm.normalize_data(data_tensor=shuffled_multi_subtask, train_data_size=train_size)
+            for key in multi_input_data:
+                # shuffle data
+                multi_input_data[key] = multi_input_data[key][random_users]
+                # normalize data
+                if key == 'subtask':
+                    norm_multi_subtask = norm.normalize_data(data_tensor=multi_input_data[key],
+                                                             train_data_size=train_size)
+                elif key == 'exercise':
+                    norm_multi_exercise = norm.normalize_data(data_tensor=multi_input_data[key],
+                                                             train_data_size=train_size)
+                elif key == 'global':
+                    norm_multi_global = norm.normalize_global_data(global_data_tensor=multi_input_data[key],
+                                                                   train_data_size=train_size)
 
             # Split into validation set and training set
             multi_train_data_x = {
-                'global': norm_multi_global[:train_size],
-                'subtask': norm_multi_subtask[:train_size]
+                'subtask': norm_multi_subtask[:train_size],
+                'exercise':  norm_multi_exercise[:train_size],
+                'global': norm_multi_global[:train_size]
             }
 
             multi_val_data_x = {
-                'global': norm_multi_global[train_size:],
-                'subtask': norm_multi_subtask[train_size:]
+                'subtask': norm_multi_subtask[train_size:],
+                'exercise':  norm_multi_exercise[train_size:],
+                'global': norm_multi_global[train_size:]
             }
         else:
             shuffled_float_data = data[random_users]
             # Normalize the now shuffled data and results matrices
-            if data_type == 'subtask':
+            if data_type == 'subtask' or data_type == 'exercise':
                 norm_float_data = norm.normalize_subtask_data_new(shuffled_float_data, train_size)
 
             elif data_type == 'global':
