@@ -58,10 +58,10 @@ def validate_nn(model_fcn=None,
                 multi_input_data[key] = multi_input_data[key][random_users]
                 # normalize data
                 if key == 'subtask':
-                    norm_multi_subtask = norm.normalize_subtask_data_new(data_tensor=multi_input_data[key],
+                    norm_multi_subtask = norm.normalize_tensor_data_new(data_tensor=multi_input_data[key],
                                                              train_data_size=train_size)
                 elif key == 'exercise':
-                    norm_multi_exercise = norm.normalize_subtask_data_new(data_tensor=multi_input_data[key],
+                    norm_multi_exercise = norm.normalize_tensor_data_new(data_tensor=multi_input_data[key],
                                                              train_data_size=train_size)
                 elif key == 'global':
                     norm_multi_global = norm.normalize_global_data(global_data_tensor=multi_input_data[key],

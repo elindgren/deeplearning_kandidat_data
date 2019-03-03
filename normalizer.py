@@ -40,8 +40,8 @@ def normalize_data(data_tensor, train_data_size):
     return data_tensor
 
 
-def normalize_subtask_data_new(subtask_data_tensor, train_data_size):
-    train_subset = subtask_data_tensor[:train_data_size]  # Normalize all data from the training data
+def normalize_tensor_data_new(data_tensor, train_data_size):
+    train_subset = data_tensor[:train_data_size]  # Normalize all data from the training data
     mean_matrix = np.zeros(
         (train_subset.shape[1], train_subset.shape[2]))  # A matrix containing mean values for each dataset
     std_matrix = np.zeros((train_subset.shape[1], train_subset.shape[2]))
@@ -49,11 +49,11 @@ def normalize_subtask_data_new(subtask_data_tensor, train_data_size):
         #user_matrix = subtask_data_tensor[:, :, i]
         for j in range(len(train_subset[0, :, 0])):
             mean_matrix[j][i] = train_subset[:, j, i].mean(axis=0)
-            subtask_data_tensor[:, j, i] -= mean_matrix[j][i]
+            data_tensor[:, j, i] -= mean_matrix[j][i]
             std_matrix[j][i] = train_subset[:, j, i].std()
             if std_matrix[j][i] != 0:
-                subtask_data_tensor[:, j, i] /= std_matrix[j][i]
-    return subtask_data_tensor
+                data_tensor[:, j, i] /= std_matrix[j][i]
+    return data_tensor
 
 
 def normalize_global_data(global_data_tensor, train_data_size):
