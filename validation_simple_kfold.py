@@ -35,8 +35,8 @@ def validate_nn(model_fcn=None,
         print("*********** Validating model: " + model_name + " ***********")
     start_total = time.time()
 
-    acc_matrix = np.zeros(len(seeds), 2)  # min, max
-    loss_matrix = np.zeros(len(seeds), 2)  # min, max
+    acc_matrix = np.zeros((len(seeds), 2))  # min, max
+    loss_matrix = np.zeros((len(seeds), 2))  # min, max
 
     if verbose == 1:
         print("Training model: " + model_name)
