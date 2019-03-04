@@ -7,6 +7,7 @@
 import time
 import numpy as np
 from deeplearning_kandidat_data import normalizer as norm
+import copy
 
 
 def validate_nn(model_fcn=None,
@@ -23,18 +24,19 @@ def validate_nn(model_fcn=None,
                 test_size=0,
                 verbose=1,
                 multi_input=False,
-                multi_input_data = {}):
+                multi_input_data={}):
 
-    # Todo add callbacks for tesnorboard
+    # Todo add callbacks for tensorboard
     # Create copies of input data and results data - to avoid overwriting them
     data = np.copy(input_data)
-    multi_data = np.copy(multi_input_data)
-    results = input_results
+    multi_data = copy.deepcopy(multi_input_data)  # Create a deep copy - all sub arrays has to be new as well
+    results = np.copy(input_results)
     if verbose == 1:
         print("*********** Validating model: " + model_name + " ***********")
     start_total = time.time()
+
     acc_matrix = [[], []]  # min, max
-    loss_matrix = [[],[]]  # min, max
+    loss_matrix = [[], []]  # min, max
 
     if verbose == 1:
         print("Training model: " + model_name)
@@ -101,7 +103,7 @@ def validate_nn(model_fcn=None,
                             verbose=0)
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
-        
+
         acc_matrix[0].append(min(val_acc))
         acc_matrix[1].append(max(val_acc))
 
