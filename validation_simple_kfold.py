@@ -35,8 +35,8 @@ def validate_nn(model_fcn=None,
         print("*********** Validating model: " + model_name + " ***********")
     start_total = time.time()
 
-    acc_matrix = [[], []]  # min, max
-    loss_matrix = [[], []]  # min, max
+    acc_matrix = np.zeros(len(seeds), 2)  # min, max
+    loss_matrix = np.zeros(len(seeds), 2)  # min, max
 
     if verbose == 1:
         print("Training model: " + model_name)
@@ -104,11 +104,11 @@ def validate_nn(model_fcn=None,
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
 
-        acc_matrix[0].append(min(val_acc))
-        acc_matrix[1].append(max(val_acc))
+        acc_matrix[idx][0](min(val_acc))
+        acc_matrix[idx][1].append(max(val_acc))
 
-        loss_matrix[0].append(min(val_loss))
-        loss_matrix[1].append(max(val_loss))
+        loss_matrix[idx][0].append(min(val_loss))
+        loss_matrix[idx][1].append(max(val_loss))
         end_seed = time.time()
         if verbose == 1:
             print("Seed time: " + str(end_seed-start_seed) + "s")
@@ -136,15 +136,15 @@ def validate_nn(model_fcn=None,
     val_accs = np.array(acc_matrix)
     val_losses = np.array(loss_matrix)
     # Calculate accuracy score
-    val_acc_max_mean = np.mean(val_accs[1])
-    val_acc_min_mean = np.mean(val_accs[0])
-    val_acc_max_std = np.std(val_accs[1])
-    val_acc_min_std = np.std(val_accs[0])
+    val_acc_max_mean = np.mean(acc_matrix[:, 1])
+    val_acc_min_mean = np.mean(acc_matrix[:, 0])
+    val_acc_max_std = np.std(acc_matrix[:, 1])
+    val_acc_min_std = np.std(acc_matrix[:, 0])
     # Calculate loss score
-    val_loss_max_mean = np.mean(val_losses[1])
-    val_loss_min_mean = np.mean(val_losses[0])
-    val_loss_max_std = np.std(val_losses[1])
-    val_loss_min_std = np.std(val_losses[0])
+    val_loss_max_mean = np.mean(loss_matrix[:, 1])
+    val_loss_min_mean = np.mean(loss_matrix[:, 0])
+    val_loss_max_std = np.std(loss_matrix[:, 1])
+    val_loss_min_std = np.std(loss_matrix[:, 0])
 
     print("\tMax validation acc (mean +-std): " + str(val_acc_max_mean) + " +- " + str(val_acc_max_std))
     print("\tMin validation acc (mean +-std): " + str(val_acc_min_mean) + " +- " + str(val_acc_min_std))
