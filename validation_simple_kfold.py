@@ -64,10 +64,10 @@ def validate_nn(model_fcn=None,
                 # normalize data
                 if key == 'subtask' or 'exercise':
                     multi_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_data[key],
-                                                             train_data_size=train_size)
+                                                                    train_data_size=train_size)
                 elif key == 'global':
                     multi_data[key] = norm.normalize_global_data(global_data_tensor=multi_data[key],
-                                                                   train_data_size=train_size)
+                                                                train_data_size=train_size)
                 else:
                     multi_data[key] = []
                 # Split into validation set and training set
@@ -101,7 +101,14 @@ def validate_nn(model_fcn=None,
                             verbose=0)
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
-	print(val_acc)
+        print("val_acc", end=" ")
+        print(val_acc)
+        print("seed", end=" ")
+        print(seed)
+        print("x_train", end=" ")
+        print(x_train)
+
+
         acc_matrix[0].append(min(val_acc))
         acc_matrix[1].append(max(val_acc))
 
