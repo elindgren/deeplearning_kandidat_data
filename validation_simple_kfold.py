@@ -101,7 +101,7 @@ def validate_nn(model_fcn=None,
                             verbose=0)
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
-
+	print(val_acc)
         acc_matrix[0].append(min(val_acc))
         acc_matrix[1].append(max(val_acc))
 
