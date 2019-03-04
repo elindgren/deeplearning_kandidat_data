@@ -11,8 +11,8 @@ from deeplearning_kandidat_data import normalizer as norm
 
 def validate_nn(model_fcn=None,
                 seeds=[],
-                data=[],
-                results=[],
+                input_data=[],
+                input_results=[],
                 data_type='subtask',
                 model_name="Generic NN",
                 loss_fcn="binary crossentropy",
@@ -26,7 +26,10 @@ def validate_nn(model_fcn=None,
                 multi_input_data = {}):
 
     # Todo add callbacks for tesnorboard
-
+    # Create copies of input data and results data - to avoid overwriting them
+    data = np.copy(input_data)
+    multi_data = np.copy(multi_input_data)
+    results = input_results
     if verbose == 1:
         print("*********** Validating model: " + model_name + " ***********")
     start_total = time.time()
@@ -41,7 +44,7 @@ def validate_nn(model_fcn=None,
         start_seed = time.time()
         # ***************** Normalize data *******************
         np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
-        random_users = np.random.randint(0, data.shape[0] - test_size, size=data.shape[0] - test_size) # Shuffle data
+        random_users = np.random.randint(0, data.shape[0] - test_size, size=data.shape[0] - test_size)  # Shuffle data
 
         # ******* Results data ******
         # Results are the same for multi input and regular input NN
@@ -55,21 +58,21 @@ def validate_nn(model_fcn=None,
             # ************* Special case - multi input NN *******************
             multi_train_data_x = {}
             multi_val_data_x = {}
-            for key in multi_input_data:
+            for key in multi_data:
                 # shuffle data
-                multi_input_data[key] = multi_input_data[key][random_users]
+                multi_data[key] = multi_data[key][random_users]
                 # normalize data
                 if key == 'subtask' or 'exercise':
-                    multi_input_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_input_data[key],
+                    multi_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_data[key],
                                                              train_data_size=train_size)
                 elif key == 'global':
-                    multi_input_data[key] = norm.normalize_global_data(global_data_tensor=multi_input_data[key],
+                    multi_data[key] = norm.normalize_global_data(global_data_tensor=multi_data[key],
                                                                    train_data_size=train_size)
                 else:
-                    multi_input_data[key] = []
+                    multi_data[key] = []
                 # Split into validation set and training set
-                multi_train_data_x[key] = multi_input_data[key][:train_size]
-                multi_val_data_x[key] = multi_input_data[key][train_size:]
+                multi_train_data_x[key] = multi_data[key][:train_size]
+                multi_val_data_x[key] = multi_data[key][train_size:]
         else:
             shuffled_float_data = data[random_users]
             # Normalize the now shuffled data and results matrices
@@ -119,8 +122,8 @@ def validate_nn(model_fcn=None,
     print("Optimizer function: " + optimizer_fcn)
     if multi_input:
         print('Multi input: ' + str(multi_input))
-        for key in multi_input_data:
-            print("Number of " + key + " features: " + str(multi_input_data[key].shape[1]))
+        for key in multi_data:
+            print("Number of " + key + " features: " + str(multi_data[key].shape[1]))
     else:
         print("Number of features: " + str(data.shape[1]))
     print("Epochs: " + str(epochs))
