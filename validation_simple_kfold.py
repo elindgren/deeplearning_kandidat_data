@@ -89,7 +89,6 @@ def validate_nn(model_fcn=None,
         # ******************** Train NN ***********************
         if multi_input:
             model = model_fcn(data=multi_train_data_x, optimizer_fcn=optimizer_fcn, loss_fcn=loss_fcn)
-            print("Model id: " + str(id(object)))
             out = model.fit(multi_train_data_x, y_train,
                             validation_data=[multi_val_data_x, y_val],
                             epochs=epochs,
@@ -97,7 +96,6 @@ def validate_nn(model_fcn=None,
                             verbose=0)
         else:
             model = model_fcn(data=x_train, optimizer_fcn=optimizer_fcn, loss_fcn=loss_fcn)
-            print("Model id: " + str(id(object)))
             out = model.fit(x_train, y_train,
                             validation_data=[x_val, y_val],
                             epochs=epochs,
