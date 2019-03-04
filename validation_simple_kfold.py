@@ -104,11 +104,11 @@ def validate_nn(model_fcn=None,
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
 
-        acc_matrix[idx][0](min(val_acc))
-        acc_matrix[idx][1].append(max(val_acc))
+        acc_matrix[idx][0] = min(val_acc)
+        acc_matrix[idx][1] = max(val_acc)
 
-        loss_matrix[idx][0].append(min(val_loss))
-        loss_matrix[idx][1].append(max(val_loss))
+        loss_matrix[idx][0] = min(val_loss)
+        loss_matrix[idx][1] = max(val_loss)
         end_seed = time.time()
         if verbose == 1:
             print("Seed time: " + str(end_seed-start_seed) + "s")
