@@ -59,15 +59,14 @@ def validate_nn(model_fcn=None,
                 # shuffle data
                 multi_input_data[key] = multi_input_data[key][random_users]
                 # normalize data
-                if key == 'subtask':
-                    multi_input_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_input_data[key],
-                                                             train_data_size=train_size)
-                elif key == 'exercise':
+                if key == 'subtask' or 'exercise':
                     multi_input_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_input_data[key],
                                                              train_data_size=train_size)
                 elif key == 'global':
                     multi_input_data[key] = norm.normalize_global_data(global_data_tensor=multi_input_data[key],
                                                                    train_data_size=train_size)
+                else:
+                    multi_input_data[key] = []
                 # Split into validation set and training set
                 multi_train_data_x[key] = multi_input_data[key][:train_size]
                 multi_val_data_x[key] = multi_input_data[key][train_size:]
