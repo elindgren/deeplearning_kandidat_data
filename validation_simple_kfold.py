@@ -133,9 +133,8 @@ def validate_nn(model_fcn=None,
     print("Total run time of script: " + str(total_time) + "s")
     #print("*******************************************************")
     print("**************** Model: " + model_name + " ****************")
-    val_accs = np.array(acc_matrix)
-    val_losses = np.array(loss_matrix)
     # Calculate accuracy score
+    print(acc_matrix)
     val_acc_max_mean = np.mean(acc_matrix[:, 1])
     val_acc_min_mean = np.mean(acc_matrix[:, 0])
     val_acc_max_std = np.std(acc_matrix[:, 1])
