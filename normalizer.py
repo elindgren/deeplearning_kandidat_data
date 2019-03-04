@@ -61,7 +61,7 @@ def normalize_global_data(global_data_tensor, train_data_size):
     # Normalize for each feature along the user dimension.
     mean_vector = np.zeros((train_subset.shape[1]))
     std_vector = np.zeros((train_subset.shape[1]))
-    for i in range(len(global_data_tensor[0,:])):
+    for i in range(len(global_data_tensor[0, :])):
         mean_vector[i] = train_subset[:, i].mean(axis=0)
         global_data_tensor[:, i] -= mean_vector[i]
         std_vector[i] = train_subset[:, i].std()

@@ -66,11 +66,11 @@ def validate_nn(model_fcn=None,
                 # normalize data
                 print(key)
                 if key == 'subtask' or 'exercise':
-                    print(key)
+                    print("Exercise" + str(multi_data[key].shape))
                     multi_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_data[key],
                                                                     train_data_size=train_size)
                 elif key == 'global':
-                    print(key)
+                    print("Global" + str(multi_data[key].shape))
                     multi_data[key] = norm.normalize_global_data(global_data_tensor=multi_data[key],
                                                                 train_data_size=train_size)
                 else:
