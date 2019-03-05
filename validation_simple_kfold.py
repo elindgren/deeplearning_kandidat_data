@@ -60,23 +60,21 @@ def validate_nn(model_fcn=None,
             # ************* Special case - multi input NN *******************
             multi_train_data_x = {}
             multi_val_data_x = {}
-            shuffled_data = {}
-            normalized_data = {}
             for key in multi_data:
                 # shuffle data
-                shuffled_data[key] = multi_data[key][random_users]
+                multi_data[key] = multi_data[key][random_users]
                 # normalize data
                 if key == 'subtask' or key == 'exercise':
-                    normalized_data[key] = norm.normalize_tensor_data_new(data_tensor=shuffled_data[key],
+                    multi_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_data[key],
                                                                     train_data_size=train_size)
                 elif key == 'global':
-                    normalized_data[key] = norm.normalize_global_data(global_data_tensor=shuffled_data[key],
+                    multi_data[key] = norm.normalize_global_data(global_data_tensor=multi_data[key],
                                                                 train_data_size=train_size)
                 else:
-                    normalized_data[key] = []
+                    multi_data[key] = []
                 # Split into validation set and training set
-                multi_train_data_x[key] = normalized_data[key][:train_size]
-                multi_val_data_x[key] = normalized_data[key][train_size:]
+                multi_train_data_x[key] = multi_data[key][:train_size]
+                multi_val_data_x[key] = multi_data[key][train_size:]
         else:
             shuffled_float_data = data[random_users]
             # Normalize the now shuffled data and results matrices

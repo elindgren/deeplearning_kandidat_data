@@ -71,10 +71,11 @@ def normalize_global_data(global_data_tensor, train_data_size):
 
 
 def normalize_results(results):  # As of now only converts to 0 or 1
+    tmp = np.copy(results)
     # Normalize results vector - simplify output space to 0 or 1 for passed or not passed
-    for i, result in enumerate(results):
-        if float(results[i]) >= 5:  # If more than 4 points, the user passed the exam
-            results[i] = float(1)
+    for i, result in enumerate(tmp):
+        if float(tmp[i]) >= 5:  # If more than 4 points, the user passed the exam
+            tmp[i] = float(1)
         else:
-            results[i] = float(0)
-    return results
+            tmp[i] = float(0)
+    return tmp
