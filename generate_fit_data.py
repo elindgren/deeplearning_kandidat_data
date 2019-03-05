@@ -29,6 +29,8 @@ def gen_fit_data(input_data= [],
     shuffled_float_results = results[random_users]
     if normalize_results:
         norm_float_results = norm.normalize_results(shuffled_float_results)
+    else:
+        norm_float_results = shuffled_float_results
     y_val = norm_float_results[train_size:]
     y_train = norm_float_results[:train_size]
 
