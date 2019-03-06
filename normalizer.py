@@ -82,3 +82,16 @@ def normalize_results(results):  # As of now only converts to 0 or 1
         else:
             tmp[i] = float(0)
     return tmp
+
+def normalize_results_u5(results):
+    tmp = np.copy(results)
+    for i, result in enumerate(tmp):
+        if result >= 13:
+            tmp[i] = float(5)
+        elif (result < 13) and (result >= 9):
+            tmp[i] = float(4)
+        elif (result < 9) and (result >= 5):
+            tmp[i] = float(3)
+        else:
+            tmp[i] = 0
+    return tmp
