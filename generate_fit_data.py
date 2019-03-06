@@ -7,7 +7,8 @@ def gen_fit_data(input_data= [],
                  train_size=100,
                  test_size=0,
                  seed=100,
-                 data_type='subtask'):
+                 data_type='subtask',
+                 normalize_results=True):
     data = np.copy(input_data)
     results = np.copy(input_results)
 
@@ -26,7 +27,10 @@ def gen_fit_data(input_data= [],
     # ******* Results data ******
     # Results are the same for multi input and regular input NN
     shuffled_float_results = results[random_users]
-    norm_float_results = norm.normalize_results(shuffled_float_results)
+    if normalize_results:
+        norm_float_results = norm.normalize_results(shuffled_float_results)
+    else:
+        norm_float_results = shuffled_float_results
     y_val = norm_float_results[train_size:]
     y_train = norm_float_results[:train_size]
 
