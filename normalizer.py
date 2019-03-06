@@ -83,6 +83,7 @@ def normalize_results(results):  # As of now only converts to 0 or 1
             tmp[i] = float(0)
     return tmp
 
+
 def normalize_results_u5(results):
     tmp = np.copy(results)
     for i, result in enumerate(tmp):
