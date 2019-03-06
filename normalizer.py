@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 
 def normalize_data(data_tensor, train_data_size):
@@ -58,7 +59,7 @@ def normalize_tensor_data_new(data_tensor, train_data_size):
 
 
 def normalize_global_data(global_data_tensor, train_data_size):
-    tmp = np.copy(global_data_tensor)
+    tmp = copy.deepcopy(global_data_tensor)
     train_subset = tmp[:train_data_size]  # Normalize all data from the training data
     # Normalize for each feature along the user dimension.
     mean_vector = np.zeros((train_subset.shape[1]))
