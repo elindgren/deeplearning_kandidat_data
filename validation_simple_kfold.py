@@ -24,7 +24,8 @@ def validate_nn(model_fcn=None,
                 test_size=0,
                 verbose=1,
                 multi_input=False,
-                multi_input_data={}):
+                multi_input_data={},
+                u5=False):
 
     # Todo add callbacks for tensorboard
     # Create copies of input data and results data - to avoid overwriting them
@@ -51,7 +52,10 @@ def validate_nn(model_fcn=None,
         # ******* Results data ******
         # Results are the same for multi input and regular input NN
         shuffled_float_results = results[random_users]
-        norm_float_results = norm.normalize_results(shuffled_float_results)
+        if u5:
+            norm_float_results = norm.normalize_results_u5(shuffled_float_results)
+        else:
+            norm_float_results = norm.normalize_results(shuffled_float_results)
         y_val = norm_float_results[train_size:]
         y_train = norm_float_results[:train_size]
 
@@ -60,21 +64,23 @@ def validate_nn(model_fcn=None,
             # ************* Special case - multi input NN *******************
             multi_train_data_x = {}
             multi_val_data_x = {}
+            shuffled_data = {}
+            normalized_data = {}
             for key in multi_data:
                 # shuffle data
-                multi_data[key] = multi_data[key][random_users]
+                shuffled_data[key] = multi_data[key][random_users]
                 # normalize data
                 if key == 'subtask' or key == 'exercise':
-                    multi_data[key] = norm.normalize_tensor_data_new(data_tensor=multi_data[key],
+                    normalized_data[key] = norm.normalize_tensor_data_new(data_tensor=shuffled_data[key],
                                                                     train_data_size=train_size)
                 elif key == 'global':
-                    multi_data[key] = norm.normalize_global_data(global_data_tensor=multi_data[key],
+                    normalized_data[key] = norm.normalize_global_data(global_data_tensor=shuffled_data[key],
                                                                 train_data_size=train_size)
                 else:
-                    multi_data[key] = []
+                    normalized_data[key] = []
                 # Split into validation set and training set
-                multi_train_data_x[key] = multi_data[key][:train_size]
-                multi_val_data_x[key] = multi_data[key][train_size:]
+                multi_train_data_x[key] = normalized_data[key][:train_size]
+                multi_val_data_x[key] = normalized_data[key][train_size:]
         else:
             shuffled_float_data = data[random_users]
             # Normalize the now shuffled data and results matrices

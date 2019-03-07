@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 
 def normalize_data(data_tensor, train_data_size):
@@ -41,7 +42,8 @@ def normalize_data(data_tensor, train_data_size):
 
 
 def normalize_tensor_data_new(data_tensor, train_data_size):
-    train_subset = data_tensor[:train_data_size]  # Normalize all data from the training data
+    tmp = np.copy(data_tensor)
+    train_subset = tmp[:train_data_size]  # Normalize all data from the training data
     mean_matrix = np.zeros(
         (train_subset.shape[1], train_subset.shape[2]))  # A matrix containing mean values for each dataset
     std_matrix = np.zeros((train_subset.shape[1], train_subset.shape[2]))
@@ -49,25 +51,26 @@ def normalize_tensor_data_new(data_tensor, train_data_size):
         #user_matrix = subtask_data_tensor[:, :, i]
         for j in range(len(train_subset[0, :, 0])):
             mean_matrix[j][i] = train_subset[:, j, i].mean(axis=0)
-            data_tensor[:, j, i] -= mean_matrix[j][i]
+            tmp[:, j, i] -= mean_matrix[j][i]
             std_matrix[j][i] = train_subset[:, j, i].std()
             if std_matrix[j][i] != 0:
-                data_tensor[:, j, i] /= std_matrix[j][i]
-    return data_tensor
+                tmp[:, j, i] /= std_matrix[j][i]
+    return tmp
 
 
 def normalize_global_data(global_data_tensor, train_data_size):
-    train_subset = global_data_tensor[:train_data_size]  # Normalize all data from the training data
+    tmp = np.copy(global_data_tensor)
+    train_subset = tmp[:train_data_size]  # Normalize all data from the training data
     # Normalize for each feature along the user dimension.
     mean_vector = np.zeros((train_subset.shape[1]))
     std_vector = np.zeros((train_subset.shape[1]))
-    for i in range(len(global_data_tensor[0, :])):
+    for i in range(len(tmp[0, :])):
         mean_vector[i] = train_subset[:, i].mean(axis=0)
-        global_data_tensor[:, i] -= mean_vector[i]
+        tmp[:, i] -= mean_vector[i]
         std_vector[i] = train_subset[:, i].std()
         if std_vector[i] != 0:
-            global_data_tensor[:, i] /= std_vector[i]
-    return global_data_tensor
+            tmp[:, i] /= std_vector[i]
+    return tmp
 
 
 def normalize_results(results):  # As of now only converts to 0 or 1
@@ -79,3 +82,18 @@ def normalize_results(results):  # As of now only converts to 0 or 1
         else:
             tmp[i] = float(0)
     return tmp
+
+
+def normalize_results_u5(results):
+    tmp = np.copy(results)
+    one_hot = np.array((tmp.shape[0], 4))  # 4 graders - U, 3, 4, 5
+    for i, result in enumerate(tmp):
+        if result >= 13:
+            one_hot[i, 3] = float(1)
+        elif (result < 13) and (result >= 9):
+            one_hot[i, 2] = float(1)
+        elif (result < 9) and (result >= 5):
+            one_hot[i, 1] = float(1)
+        else:
+            one_hot[i, 0] = float(1)
+    return one_hot
