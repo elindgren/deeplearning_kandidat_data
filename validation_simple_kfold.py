@@ -54,6 +54,7 @@ def validate_nn(model_fcn=None,
         shuffled_float_results = results[random_users]
         if u5:
             norm_float_results = norm.normalize_results_u5(shuffled_float_results)
+            print(norm_float_results.shape)
         else:
             norm_float_results = norm.normalize_results(shuffled_float_results)
         y_val = norm_float_results[train_size:]
