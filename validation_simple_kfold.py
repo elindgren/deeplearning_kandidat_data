@@ -54,7 +54,6 @@ def validate_nn(model_fcn=None,
         shuffled_float_results = results[random_users]
         if u5:
             norm_float_results = norm.normalize_results_u5(shuffled_float_results)
-            print(norm_float_results.shape)
         else:
             norm_float_results = norm.normalize_results(shuffled_float_results)
         y_val = norm_float_results[train_size:]
@@ -141,7 +140,7 @@ def validate_nn(model_fcn=None,
     #print("*******************************************************")
     print("**************** Model: " + model_name + " ****************")
     # Calculate accuracy score
-    print(acc_matrix)
+    #print(acc_matrix)
     val_acc_max_mean = np.mean(acc_matrix[:, 1])
     val_acc_min_mean = np.mean(acc_matrix[:, 0])
     val_acc_max_std = np.std(acc_matrix[:, 1])
