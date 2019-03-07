@@ -86,7 +86,7 @@ def normalize_results(results):  # As of now only converts to 0 or 1
 
 def normalize_results_u5(results):
     tmp = np.copy(results)
-    one_hot = np.array((tmp.shape[0], 4))  # 4 graders - U, 3, 4, 5
+    one_hot = np.zeros((tmp.shape[0], 4))  # 4 graders - U, 3, 4, 5
     for i, result in enumerate(tmp):
         if result >= 13:
             one_hot[i, 3] = float(1)
