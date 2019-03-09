@@ -38,6 +38,9 @@ def gen_fit_data(input_data= [],
     y_val = norm_float_results[train_size:]
     y_train = norm_float_results[:train_size]
 
+    # shuffle the results the same way
+    shuffled_results = results[random_users]
+
     x_test = []
     y_test = []
-    return x_train, y_train, x_val, y_val, x_test, y_test
+    return x_train, y_train, x_val, y_val, x_test, y_test, shuffled_results
