@@ -9,7 +9,8 @@ def gen_fit_data(input_data= [],
                  seed=100,
                  data_type='subtask',
                  normalize_results=True,
-                 u5=False):
+                 u5=False,
+                 grade_points=[]):
     data = np.copy(input_data)
     results = np.copy(input_results)
 
@@ -30,9 +31,9 @@ def gen_fit_data(input_data= [],
     shuffled_float_results = results[random_users]
     if normalize_results:
         if u5:
-            norm_float_results = norm.normalize_results_u5(shuffled_float_results)
+            norm_float_results = norm.normalize_results_u5(shuffled_float_results, grade_points)
         else:
-            norm_float_results = norm.normalize_results(shuffled_float_results)
+            norm_float_results = norm.normalize_results(shuffled_float_results, grade_points[0])
     else:
         norm_float_results = shuffled_float_results
     y_val = norm_float_results[train_size:]
