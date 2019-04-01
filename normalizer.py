@@ -88,11 +88,11 @@ def normalize_results_u5(results, grade_points):
     tmp = np.copy(results)
     one_hot = np.zeros((tmp.shape[0], 4))  # 4 grades - U, 3, 4, 5
     for i, result in enumerate(tmp):
-        if result >= grade_points[2]:
+        if result >= int(grade_points[2]):
             one_hot[i, 3] = float(1)
-        elif (result < grade_points[2]) and (result >= grade_points[1]):
+        elif (result < int(grade_points[2])) and (result >= int(grade_points[1])):
             one_hot[i, 2] = float(1)
-        elif (result < grade_points[1]) and (result >= grade_points[0]):
+        elif (result < int(grade_points[1])) and (result >= int(grade_points[0])):
             one_hot[i, 1] = float(1)
         else:
             one_hot[i, 0] = float(1)
