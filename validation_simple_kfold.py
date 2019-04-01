@@ -25,7 +25,8 @@ def validate_nn(model_fcn=None,
                 verbose=1,
                 multi_input=False,
                 multi_input_data={},
-                u5=False):
+                u5=False,
+                grade_points=[]):
 
     # Todo add callbacks for tensorboard
     # Create copies of input data and results data - to avoid overwriting them
@@ -53,7 +54,7 @@ def validate_nn(model_fcn=None,
         # Results are the same for multi input and regular input NN
         shuffled_float_results = results[random_users]
         if u5:
-            norm_float_results = norm.normalize_results_u5(shuffled_float_results)
+            norm_float_results = norm.normalize_results_u5(shuffled_float_results, grade_points)
         else:
             norm_float_results = norm.normalize_results(shuffled_float_results)
         y_val = norm_float_results[train_size:]
