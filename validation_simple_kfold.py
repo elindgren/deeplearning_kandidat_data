@@ -56,7 +56,7 @@ def validate_nn(model_fcn=None,
         if u5:
             norm_float_results = norm.normalize_results_u5(shuffled_float_results, grade_points)
         else:
-            norm_float_results = norm.normalize_results(shuffled_float_results)
+            norm_float_results = norm.normalize_results(shuffled_float_results, grade_points[0])
         y_val = norm_float_results[train_size:]
         y_train = norm_float_results[:train_size]
 
