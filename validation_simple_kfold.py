@@ -48,10 +48,10 @@ def validate_nn(model_fcn=None,
         start_seed = time.time()
 
         # Declare tensor which will be concatenated
-        x_train = np.array([])
-        y_train = np.array([])
-        x_val = np.array([])
-        y_val = np.array([])
+        x_train = []
+        y_train = []
+        x_val = []
+        y_val = []
         # Loop over all tensors in data
         for i, course_data in enumerate(data):
             # ***************** Normalize data *******************
