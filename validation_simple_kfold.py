@@ -47,11 +47,6 @@ def validate_nn(model_fcn=None,
             print("\tProgress: " + str(idx+1) + "/" + str(len(seeds)) + ".", end=" ")
         start_seed = time.time()
 
-        # Declare tensor which will be concatenated
-        x_train = []
-        y_train = []
-        x_val = []
-        y_val = []
         # Loop over all tensors in data
         for i, course_data in enumerate(data):
             # ***************** Normalize data *******************
@@ -66,9 +61,13 @@ def validate_nn(model_fcn=None,
                 norm_float_results = norm.normalize_results_u5(shuffled_float_results, grade_points[i])
             else:
                 norm_float_results = norm.normalize_results(shuffled_float_results, grade_points[i][0])
-            y_val = np.append(y_val, norm_float_results[train_size:], axis=0)
-            y_train = np.append(y_train, norm_float_results[:train_size], axis=0)
-
+            # Declare or append to tensors
+            if i == 0:
+                y_train = norm_float_results[:train_size]
+                y_val = norm_float_results[train_size:]
+            else:
+                y_train = np.append(y_train, norm_float_results[:train_size], axis=0)
+                y_val = np.append(y_val, norm_float_results[train_size:], axis=0)
             # ******* Training data ******
             if multi_input:
                 # ************* Special case - multi input NN *******************
@@ -100,8 +99,12 @@ def validate_nn(model_fcn=None,
                     norm_float_data = norm.normalize_global_data(global_data_tensor=shuffled_float_data, train_data_size=train_size)
                 else:
                     norm_float_data = []
-                x_train = np.append(x_train, norm_float_data[:train_size], axis=0)
-                x_val = np.append(x_val, norm_float_data[train_size:], axis=0)
+                if i  == 0:
+                    x_train = norm_float_data[:train_size]
+                    x_val = norm_float_data[train_size:]
+                else:
+                    x_train = np.append(x_train, norm_float_data[:train_size], axis=0)
+                    x_val = np.append(x_val, norm_float_data[train_size:], axis=0)
         print("Shape x_train: " + str(x_train.shape))
         print("Shape y_train: " + str(y_train.shape))
         print("Shape x_val: " + str(x_val.shape))
