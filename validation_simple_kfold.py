@@ -105,11 +105,12 @@ def validate_nn(model_fcn=None,
                 else:
                     x_train = np.append(x_train, norm_float_data[:train_size[i]], axis=0)
                     x_val = np.append(x_val, norm_float_data[train_size[i]:], axis=0)
-        print("Shape x_train: " + str(x_train.shape))
-        print("Shape y_train: " + str(y_train.shape))
-        print("Shape x_val: " + str(x_val.shape))
-        print("Shape y_val: " + str(y_val.shape))
-        # ******************** Train NN ***********************
+        # Debug
+        # print("Shape x_train: " + str(x_train.shape))
+        # print("Shape y_train: " + str(y_train.shape))
+        # print("Shape x_val: " + str(x_val.shape))
+        # print("Shape y_val: " + str(y_val.shape))
+        # # ******************** Train NN ***********************
         if multi_input:
             model = model_fcn(data=multi_train_data_x, optimizer_fcn=optimizer_fcn, loss_fcn=loss_fcn)
             out = model.fit(multi_train_data_x, y_train,
@@ -150,7 +151,7 @@ def validate_nn(model_fcn=None,
         for key in multi_data:
             print("Number of " + key + " features: " + str(multi_data[key].shape[1]))
     else:
-        print("Number of features: " + str(data.shape[1]))
+        print("Number of features: " + str(course_data.shape[1]))
     print("Epochs: " + str(epochs))
     print("Batch size: " + str(batch_size))
     print("Total run time of script: " + str(total_time) + "s")
