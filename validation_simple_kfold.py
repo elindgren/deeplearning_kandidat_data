@@ -12,8 +12,8 @@ import copy
 
 def validate_nn(model_fcn=None,
                 seeds=[],
-                input_data=[],
-                input_results=[],
+                input_data=[[]],
+                input_results=[[]],
                 data_type='subtask',
                 model_name="Generic NN",
                 loss_fcn="binary crossentropy",
@@ -26,7 +26,7 @@ def validate_nn(model_fcn=None,
                 multi_input=False,
                 multi_input_data={},
                 u5=False,
-                grade_points=[]):
+                grade_points=[[]]):
 
     # Todo add callbacks for tensorboard
     # Create copies of input data and results data - to avoid overwriting them
@@ -46,53 +46,66 @@ def validate_nn(model_fcn=None,
         if verbose == 1:
             print("\tProgress: " + str(idx+1) + "/" + str(len(seeds)) + ".", end=" ")
         start_seed = time.time()
-        # ***************** Normalize data *******************
-        np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
-        random_users = np.random.randint(0, data.shape[0] - test_size, size=data.shape[0] - test_size)  # Shuffle data
 
-        # ******* Results data ******
-        # Results are the same for multi input and regular input NN
-        shuffled_float_results = results[random_users]
-        if u5:
-            norm_float_results = norm.normalize_results_u5(shuffled_float_results, grade_points)
-        else:
-            norm_float_results = norm.normalize_results(shuffled_float_results, grade_points[0])
-        y_val = norm_float_results[train_size:]
-        y_train = norm_float_results[:train_size]
+        # Declare tensor which will be concatenated
+        x_train = np.array([])
+        y_train = np.array([])
+        x_val = np.array([])
+        y_val = np.array([])
+        # Loop over all tensors in data
+        for i, course_data in enumerate(data):
+            # ***************** Normalize data *******************
+            np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
+            random_users = np.random.randint(0, course_data.shape[0] - test_size, size=course_data.shape[0] - test_size)  # Shuffle data
 
-        # ******* Training data ******
-        if multi_input:
-            # ************* Special case - multi input NN *******************
-            multi_train_data_x = {}
-            multi_val_data_x = {}
-            shuffled_data = {}
-            normalized_data = {}
-            for key in multi_data:
-                # shuffle data
-                shuffled_data[key] = multi_data[key][random_users]
-                # normalize data
-                if key == 'subtask' or key == 'exercise':
-                    normalized_data[key] = norm.normalize_tensor_data_new(data_tensor=shuffled_data[key],
-                                                                    train_data_size=train_size)
-                elif key == 'global':
-                    normalized_data[key] = norm.normalize_global_data(global_data_tensor=shuffled_data[key],
-                                                                train_data_size=train_size)
-                else:
-                    normalized_data[key] = []
-                # Split into validation set and training set
-                multi_train_data_x[key] = normalized_data[key][:train_size]
-                multi_val_data_x[key] = normalized_data[key][train_size:]
-        else:
-            shuffled_float_data = data[random_users]
-            # Normalize the now shuffled data and results matrices
-            if data_type == 'subtask' or data_type == 'exercise':
-                norm_float_data = norm.normalize_tensor_data_new(shuffled_float_data, train_size)
-            elif data_type == 'global':
-                norm_float_data = norm.normalize_global_data(global_data_tensor=data, train_data_size=train_size)
+            # ******* Results data ******
+            course_results = results[i]
+            # Results are the same for multi input and regular input NN
+            shuffled_float_results = course_results[random_users]
+            if u5:
+                norm_float_results = norm.normalize_results_u5(shuffled_float_results, grade_points[i])
             else:
-                norm_float_data = []
-            x_train = norm_float_data[:train_size]
-            x_val = norm_float_data[train_size:]
+                norm_float_results = norm.normalize_results(shuffled_float_results, grade_points[i][0])
+            y_val = np.append(y_val, norm_float_results[train_size:], axis=0)
+            y_train = np.append(y_train, norm_float_results[:train_size], axis=0)
+
+            # ******* Training data ******
+            if multi_input:
+                # ************* Special case - multi input NN *******************
+                multi_train_data_x = {}
+                multi_val_data_x = {}
+                shuffled_data = {}
+                normalized_data = {}
+                for key in multi_data:
+                    # shuffle data
+                    shuffled_data[key] = multi_data[key][random_users]
+                    # normalize data
+                    if key == 'subtask' or key == 'exercise':
+                        normalized_data[key] = norm.normalize_tensor_data_new(data_tensor=shuffled_data[key],
+                                                                        train_data_size=train_size)
+                    elif key == 'global':
+                        normalized_data[key] = norm.normalize_global_data(global_data_tensor=shuffled_data[key],
+                                                                    train_data_size=train_size)
+                    else:
+                        normalized_data[key] = []
+                    # Split into validation set and training set
+                    multi_train_data_x[key] = normalized_data[key][:train_size]
+                    multi_val_data_x[key] = normalized_data[key][train_size:]
+            else:
+                shuffled_float_data = course_data[random_users]
+                # Normalize the now shuffled data and results matrices
+                if data_type == 'subtask' or data_type == 'exercise':
+                    norm_float_data = norm.normalize_tensor_data_new(shuffled_float_data, train_size)
+                elif data_type == 'global':
+                    norm_float_data = norm.normalize_global_data(global_data_tensor=shuffled_float_data, train_data_size=train_size)
+                else:
+                    norm_float_data = []
+                x_train = np.append(x_train, norm_float_data[:train_size], axis=0)
+                x_val = np.append(x_val, norm_float_data[train_size:], axis=0)
+        print("Shape x_train: " + str(x_train.shape))
+        print("Shape y_train: " + str(y_train.shape))
+        print("Shape x_val: " + str(x_val.shape))
+        print("Shape y_val: " + str(y_val.shape))
         # ******************** Train NN ***********************
         if multi_input:
             model = model_fcn(data=multi_train_data_x, optimizer_fcn=optimizer_fcn, loss_fcn=loss_fcn)
