@@ -53,7 +53,7 @@ def validate_nn(model_fcn=None,
             tr_size = train_size[i]
             te_size = test_size[i]
             # ***************** Normalize data *******************
-            np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
+            rn.seed(seed)  # Set a seed for randomization - to control output of np.random
             #random_users = np.random.randint(0, course_data.shape[0] - te_size, size=course_data.shape[0] - te_size)  # Shuffle data
             random_users = rn.sample(range(0, course_data.shape[0] - te_size), course_data.shape[0] - te_size)  # Shuffle data
             # ******* Results data ******

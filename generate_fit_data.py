@@ -3,7 +3,7 @@ import random as rn
 from deeplearning_kandidat_data import normalizer as norm
 
 
-def gen_fit_data(input_data= [],
+def gen_fit_data(input_data=[],
                  input_results=[],
                  train_size=100,
                  test_size=0,
@@ -15,7 +15,7 @@ def gen_fit_data(input_data= [],
     data = np.copy(input_data)
     results = np.copy(input_results)
 
-    np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
+    rn.seed(seed)  # Set a seed for randomization - to control output of np.random
     # random_users = np.random.randint(0, data.shape[0] - test_size, size=data.shape[0] - test_size)  # Shuffle data
     random_users = rn.sample(range(0, data.shape[0]-test_size), data.shape[0]-test_size)  # Shuffle data
     shuffled_float_data = data[random_users]
