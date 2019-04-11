@@ -54,8 +54,8 @@ def validate_nn(model_fcn=None,
             te_size = test_size[i]
             # ***************** Normalize data *******************
             np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
-            # random_users = np.random.randint(0, course_data.shape[0] - te_size, size=course_data.shape[0] - te_size)  # Shuffle data
-            random_users = rn.sample(range(0, data.shape[0] - te_size), data.shape[0] - te_size)  # Shuffle data
+            #random_users = np.random.randint(0, course_data.shape[0] - te_size, size=course_data.shape[0] - te_size)  # Shuffle data
+            random_users = rn.sample(range(0, course_data.shape[0] - te_size), course_data.shape[0] - te_size)  # Shuffle data
             # ******* Results data ******
             course_results = results[i]
             # Results are the same for multi input and regular input NN
@@ -129,7 +129,7 @@ def validate_nn(model_fcn=None,
                             batch_size=batch_size,
                             verbose=0)
         # **** DEBUG
-        print(out.history.keys())
+        #print(out.history.keys())
         # ****
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
