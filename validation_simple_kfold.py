@@ -50,9 +50,11 @@ def validate_nn(model_fcn=None,
 
         # Loop over all tensors in data
         for i, course_data in enumerate(data):
+            tr_size = train_size[i]
+            te_size = test_size[i]
             # ***************** Normalize data *******************
             np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
-            random_users = np.random.randint(0, course_data.shape[0] - test_size[i], size=course_data.shape[0] - test_size[i])  # Shuffle data
+            random_users = np.random.randint(0, course_data.shape[0] - te_size, size=course_data.shape[0] - te_size)  # Shuffle data
 
             # ******* Results data ******
             course_results = results[i]
@@ -64,11 +66,11 @@ def validate_nn(model_fcn=None,
                 norm_float_results = norm.normalize_results(shuffled_float_results, grade_points[i][0])
             # Declare or append to tensors
             if i == 0:
-                y_train = norm_float_results[:train_size[i]]
-                y_val = norm_float_results[train_size[i]:]
+                y_train = norm_float_results[:tr_size]
+                y_val = norm_float_results[tr_size:]
             else:
-                y_train = np.append(y_train, norm_float_results[:train_size[i]], axis=0)
-                y_val = np.append(y_val, norm_float_results[train_size[i]:], axis=0)
+                y_train = np.append(y_train, norm_float_results[:tr_size], axis=0)
+                y_val = np.append(y_val, norm_float_results[tr_size:], axis=0)
             # ******* Training data ******
             if multi_input:
                 # ************* Special case - multi input NN *******************
@@ -101,11 +103,11 @@ def validate_nn(model_fcn=None,
                 else:
                     norm_float_data = []
                 if i == 0:
-                    x_train = norm_float_data[:train_size[i]]
-                    x_val = norm_float_data[train_size[i]:]
+                    x_train = norm_float_data[:tr_size]
+                    x_val = norm_float_data[tr_size:]
                 else:
-                    x_train = np.append(x_train, norm_float_data[:train_size[i]], axis=0)
-                    x_val = np.append(x_val, norm_float_data[train_size[i]:], axis=0)
+                    x_train = np.append(x_train, norm_float_data[:tr_size], axis=0)
+                    x_val = np.append(x_val, norm_float_data[tr_size:], axis=0)
         # Debug
         # print("Shape x_train: " + str(x_train.shape))
         # print("Shape y_train: " + str(y_train.shape))
@@ -156,7 +158,7 @@ def validate_nn(model_fcn=None,
         for key in multi_data:
             print("Number of " + key + " features: " + str(multi_data[key].shape[1]))
     else:
-        print("Number of features: " + str(data.shape[1]))
+        print("Number of features: " + str(course_data.shape[1]))
     print("Epochs: " + str(epochs))
     print("Batch size: " + str(batch_size))
     print("Total run time of script: " + str(total_time) + "s")

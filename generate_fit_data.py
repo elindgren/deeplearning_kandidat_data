@@ -41,7 +41,9 @@ def gen_fit_data(input_data= [],
 
     # return a non-normalized version of y_val as reference
     results_reference = shuffled_float_results[train_size:]
+    # return a non-normalized version of x_val as reference
+    data_reference = shuffled_float_data[train_size:]
 
     x_test = []
     y_test = []
-    return x_train, y_train, x_val, y_val, x_test, y_test, results_reference
+    return x_train, y_train, x_val, y_val, x_test, y_test, data_reference, results_reference
