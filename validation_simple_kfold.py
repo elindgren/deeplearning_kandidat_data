@@ -8,6 +8,7 @@ import time
 import numpy as np
 from deeplearning_kandidat_data import normalizer as norm
 import copy
+from keras.models import load_model
 
 
 def validate_nn(model_fcn=None,
@@ -181,4 +182,115 @@ def validate_nn(model_fcn=None,
 
     print("\tMax validation loss (mean +-std): " + str(val_loss_max_mean) + " +- " + str(val_loss_max_std))
     print("\tMin validation loss (mean +-std): " + str(val_loss_min_mean) + " +- " + str(val_loss_min_std))
+    print("****************************************************")
+
+
+def validate_aleatoric(model_fcn=None,
+                seeds=[],
+                input_data=[],
+                input_results=[],
+                data_type='subtask',
+                model_name="Generic NN",
+                loss_fcn="binary crossentropy",
+                optimizer_fcn="rmsprop",
+                epochs=100,
+                batch_size=8,
+                train_size=100,
+                test_size=0,
+                verbose=1,
+                callback=None,
+                custom_objects=None,
+                grade_points=[]):
+
+    # Todo add callbacks for tensorboard
+    # Create copies of input data and results data - to avoid overwriting them
+    data = np.copy(input_data)
+    results = np.copy(input_results)
+    if verbose == 1:
+        print("*********** Validating model: " + model_name + " ***********")
+    start_total = time.time()
+    val_users = input_data.shape[0]-train_size
+    abs_errors = np.zeros((len(seeds), val_users))
+    sigma_xs = np.zeros((len(seeds), val_users))
+
+    if verbose == 1:
+        print("Training model: " + model_name)
+    for idx, seed in enumerate(seeds):
+        if verbose == 1:
+            print("\tProgress: " + str(idx+1) + "/" + str(len(seeds)) + ".", end=" ")
+        start_seed = time.time()
+
+        tr_size = train_size
+        te_size = test_size
+        # ***************** Normalize data *******************
+        np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
+        random_users = np.random.randint(0, data.shape[0] - te_size, size=data.shape[0] - te_size)  # Shuffle data
+
+        # ******* Results data ******
+        # Shuffle
+        shuffled_float_results = results[random_users]
+        y_train = shuffled_float_results[:tr_size]
+        y_val = shuffled_float_results[tr_size:]
+        # ******* Training data ******
+        shuffled_float_data = data[random_users]
+        # Normalize the now shuffled data and results matrices
+        if data_type == 'subtask' or data_type == 'exercise':
+            norm_float_data = norm.normalize_tensor_data_new(shuffled_float_data, tr_size)
+        elif data_type == 'global':
+            norm_float_data = norm.normalize_global_data(global_data_tensor=shuffled_float_data, train_data_size=tr_size)
+        else:
+            norm_float_data = []
+        x_train = norm_float_data[:tr_size]
+        x_val = norm_float_data[tr_size:]
+        # Debug
+        # print("Shape x_train: " + str(x_train.shape))
+        # print("Shape y_train: " + str(y_train.shape))
+        # print("Shape x_val: " + str(x_val.shape))
+        # print("Shape y_val: " + str(y_val.shape))
+        # Flip axes for RNN
+        # # ******************** Train NN ***********************
+        model, predict_model = model_fcn(data=x_train, optimizer_fcn=optimizer_fcn, loss_fcn=loss_fcn)
+        _ = model.fit(x_train, y_train,
+                        validation_data=[x_val, y_val],
+                        epochs=epochs,
+                        batch_size=batch_size,
+                        verbose=0,
+                        callbacks=[callback(filepath="best_predict_model_s" + str(seed) + ".h5", verbose=0, predict_model=predict_model)])
+        best_predict_model = load_model(filepath="best_predict_model_s" + str(seed) + ".h5", custom_objects=custom_objects)
+        predict = best_predict_model.predict(x_val)
+        exam_scores_pred = predict[0]
+        exam_scores_s = predict[1]
+        exam_scores_sigma_x = np.exp(exam_scores_s / 2)
+
+        diff = y_val - exam_scores_pred[:,0]
+        abs_errors[idx,:] = np.abs(diff)
+        sigma_xs[idx, :] = exam_scores_sigma_x
+
+        end_seed = time.time()
+        if verbose == 1:
+            print("Seed time: " + str(end_seed-start_seed) + "s")
+    end_total = time.time()
+    total_time = end_total-start_total
+    if verbose == 1:
+        print("Total time: " + str(total_time) + "s")
+        print()
+
+    print("********************** RESULTS ************************")
+    print("Number of Seeds: " + str(len(seeds)))
+    print("Loss function: " + loss_fcn)
+    print("Optimizer function: " + optimizer_fcn)
+    print("Number of features: " + str(data.shape[1]))
+    print("Epochs: " + str(epochs))
+    print("Batch size: " + str(batch_size))
+    print("Total run time of script: " + str(total_time) + "s")
+    #print("*******************************************************")
+    print("**************** Model: " + model_name + " ****************")
+    # Calculate accuracy score
+    mean_abs_error = np.mean(abs_errors)
+    std_abs_error = np.std(abs_errors)
+    mean_sigma_x = np.mean(sigma_xs)
+    std_sigma_x = np.std(sigma_xs)
+
+    print("\tAbs error (mean+-std): " + str(mean_abs_error) + " +- " + str(std_abs_error))
+    print("\tSigma_x(mean+-std): " + str(mean_sigma_x) + " +- " + str(std_sigma_x))
     print("****************************************************")
