@@ -9,6 +9,43 @@ import numpy as np
 from deeplearning_kandidat_data import normalizer as norm
 import copy
 from keras.models import load_model
+from keras.layers import Dense, Flatten, LSTM
+from keras.layers import Input, ReLU, Dropout, concatenate
+from keras.models import Model
+from keras.losses import mse, mae
+from keras.utils import plot_model
+from keras.models import load_model
+from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
+from keras.callbacks import Callback
+from keras import backend as K
+
+
+# Simons' losses **********
+def loss_laplace(y_true, y_pred):
+    loss = K.abs(y_true - y_pred)
+    loss = K.exp(-s) * loss
+    loss = s + loss
+    loss = K.mean(loss)
+
+    return loss
+
+
+def loss_normal(y_true, y_pred):
+    loss = K.square(y_true - y_pred)
+    loss = K.exp(-s) * loss
+    loss = s + loss
+    loss = K.mean(loss)
+
+    return loss
+
+
+def custom_loss_laplace(s):
+    return loss_laplace
+
+
+def custom_loss_normal(s):
+    return loss_normal
+# *******************
 
 
 def validate_nn(model_fcn=None,
@@ -242,20 +279,33 @@ def validate_aleatoric(model_fcn=None,
             norm_float_data = []
         x_train = norm_float_data[:tr_size]
         x_val = norm_float_data[tr_size:]
-        # Debug
-        # print("Shape x_train: " + str(x_train.shape))
-        # print("Shape y_train: " + str(y_train.shape))
-        # print("Shape x_val: " + str(x_val.shape))
-        # print("Shape y_val: " + str(y_val.shape))
-        # Flip axes for RNN
         # # ******************** Train NN ***********************
-        model, predict_model = model_fcn(data=x_train, optimizer_fcn=optimizer_fcn, loss_fcn=loss_fcn)
-        _ = model.fit(x_train, y_train,
-                        validation_data=[x_val, y_val],
-                        epochs=epochs,
-                        batch_size=batch_size,
-                        verbose=0,
-                        callbacks=[callback(filepath="best_predict_model_s" + str(seed) + ".h5", verbose=0, predict_model=predict_model)])
+        # MODEL
+        input_shape = (data.shape[1], data.shape[2])
+        inputs = Input(shape=input_shape, name='DNN_input')
+        x = Flatten()(inputs)
+        x = Dropout(0.45)(x)
+        x = Dense(32, activation='relu')(x)
+        x = Dropout(0.1)(x)
+        x = Dense(32, activation='relu')(x)
+        x = Dropout(0.1)(x)
+        x = Dense(64, activation='relu')(x)
+        y = Dense(1)(x)  # predict exam point
+        s = Dense(1)(x)  # predict aletoric uncertainty
+
+        train_outputs = y
+        predict_outputs = [y, s]
+
+        train_model = Model(inputs, train_outputs, name='train_model')
+        predict_model = Model(inputs, predict_outputs, name='predict_model')
+        train_model.compile(loss=custom_loss_normal(s), optimizer='rmsprop')
+        #
+        _ = train_model.fit(x_train, y_train,
+                            validation_data=[x_val, y_val],
+                            epochs=epochs,
+                            batch_size=batch_size,
+                            verbose=0,
+                            callbacks=[callback(filepath="best_predict_model_s" + str(seed) + ".h5", verbose=0, predict_model=predict_model)])
         best_predict_model = load_model(filepath="best_predict_model_s" + str(seed) + ".h5", custom_objects=custom_objects)
         predict = best_predict_model.predict(x_val)
         exam_scores_pred = predict[0]
@@ -277,8 +327,8 @@ def validate_aleatoric(model_fcn=None,
 
     print("********************** RESULTS ************************")
     print("Number of Seeds: " + str(len(seeds)))
-    print("Loss function: " + loss_fcn)
-    print("Optimizer function: " + optimizer_fcn)
+    #print("Loss function: " + loss_fcn.toString())
+    #print("Optimizer function: " + optimizer_fcn.toString())
     print("Number of features: " + str(data.shape[1]))
     print("Epochs: " + str(epochs))
     print("Batch size: " + str(batch_size))
