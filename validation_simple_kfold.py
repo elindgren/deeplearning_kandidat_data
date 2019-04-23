@@ -6,7 +6,6 @@
 
 import time
 import numpy as np
-import random as rn
 from deeplearning_kandidat_data import normalizer as norm
 import copy
 
@@ -27,6 +26,7 @@ def validate_nn(model_fcn=None,
                 multi_input=False,
                 multi_input_data={},
                 u5=False,
+                flip=False,
                 grade_points=[[]]):
 
     # Todo add callbacks for tensorboard
@@ -50,12 +50,10 @@ def validate_nn(model_fcn=None,
 
         # Loop over all tensors in data
         for i, course_data in enumerate(data):
-            tr_size = train_size[i]
-            te_size = test_size[i]
             # ***************** Normalize data *******************
-            rn.seed(seed)  # Set a seed for randomization - to control output of np.random
-            #random_users = np.random.randint(0, course_data.shape[0] - te_size, size=course_data.shape[0] - te_size)  # Shuffle data
-            random_users = rn.sample(range(0, course_data.shape[0] - te_size), course_data.shape[0] - te_size)  # Shuffle data
+            np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
+            random_users = np.random.randint(0, course_data.shape[0] - test_size[i], size=course_data.shape[0] - test_size[i])  # Shuffle data
+
             # ******* Results data ******
             course_results = results[i]
             # Results are the same for multi input and regular input NN
@@ -66,11 +64,11 @@ def validate_nn(model_fcn=None,
                 norm_float_results = norm.normalize_results(shuffled_float_results, grade_points[i][0])
             # Declare or append to tensors
             if i == 0:
-                y_train = norm_float_results[:tr_size]
-                y_val = norm_float_results[tr_size:]
+                y_train = norm_float_results[:train_size[i]]
+                y_val = norm_float_results[train_size[i]:]
             else:
-                y_train = np.append(y_train, norm_float_results[:tr_size], axis=0)
-                y_val = np.append(y_val, norm_float_results[tr_size:], axis=0)
+                y_train = np.append(y_train, norm_float_results[:train_size[i]], axis=0)
+                y_val = np.append(y_val, norm_float_results[train_size[i]:], axis=0)
             # ******* Training data ******
             if multi_input:
                 # ************* Special case - multi input NN *******************
@@ -103,16 +101,20 @@ def validate_nn(model_fcn=None,
                 else:
                     norm_float_data = []
                 if i == 0:
-                    x_train = norm_float_data[:tr_size]
-                    x_val = norm_float_data[tr_size:]
+                    x_train = norm_float_data[:train_size[i]]
+                    x_val = norm_float_data[train_size[i]:]
                 else:
-                    x_train = np.append(x_train, norm_float_data[:tr_size], axis=0)
-                    x_val = np.append(x_val, norm_float_data[tr_size:], axis=0)
+                    x_train = np.append(x_train, norm_float_data[:train_size[i]], axis=0)
+                    x_val = np.append(x_val, norm_float_data[train_size[i]:], axis=0)
         # Debug
         # print("Shape x_train: " + str(x_train.shape))
         # print("Shape y_train: " + str(y_train.shape))
         # print("Shape x_val: " + str(x_val.shape))
         # print("Shape y_val: " + str(y_val.shape))
+        # Flip axes for RNN
+        if flip:
+            x_train = np.swapaxes(x_train, 1, 2)
+            x_val = np.swapaxes(x_val, 1, 2)
         # # ******************** Train NN ***********************
         if multi_input:
             model = model_fcn(data=multi_train_data_x, optimizer_fcn=optimizer_fcn, loss_fcn=loss_fcn)
@@ -128,12 +130,8 @@ def validate_nn(model_fcn=None,
                             epochs=epochs,
                             batch_size=batch_size,
                             verbose=0)
-        # **** DEBUG
-        #print(out.history.keys())
-        # ****
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
-
 
         acc_matrix[idx][0] = min(val_acc)
         acc_matrix[idx][1] = max(val_acc)
@@ -158,7 +156,7 @@ def validate_nn(model_fcn=None,
         for key in multi_data:
             print("Number of " + key + " features: " + str(multi_data[key].shape[1]))
     else:
-        print("Number of features: " + str(course_data.shape[1]))
+        print("Number of features: " + str(data.shape[1]))
     print("Epochs: " + str(epochs))
     print("Batch size: " + str(batch_size))
     print("Total run time of script: " + str(total_time) + "s")
