@@ -44,6 +44,13 @@ def custom_loss_laplace(s):
 
 
 def custom_loss_normal(s):
+    def loss_normal(y_true, y_pred):
+        loss = K.square(y_true - y_pred)
+        loss = K.exp(-s) * loss
+        loss = s + loss
+        loss = K.mean(loss)
+
+        return loss
     return loss_normal
 # *******************
 
