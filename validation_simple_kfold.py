@@ -22,29 +22,18 @@ from keras import backend as K
 
 
 # Simons' losses **********
-def loss_laplace(y_true, y_pred):
-    loss = K.abs(y_true - y_pred)
-    loss = K.exp(-s) * loss
-    loss = s + loss
-    loss = K.mean(loss)
-
-    return loss
-
-
-def loss_normal(y_true, y_pred):
-    loss = K.square(y_true - y_pred)
-    loss = K.exp(-s) * loss
-    loss = s + loss
-    loss = K.mean(loss)
-
-    return loss
-
-
 def custom_loss_laplace(s):
     return loss_laplace
 
 
 def custom_loss_normal(s):
+    def loss_normal(y_true, y_pred):
+        loss = K.square(y_true - y_pred)
+        loss = K.exp(-s) * loss
+        loss = s + loss
+        loss = K.mean(loss)
+
+        return loss
     return loss_normal
 # *******************
 
@@ -176,7 +165,7 @@ def validate_nn(model_fcn=None,
         # ****
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
-        print(val_acc)
+
 
         acc_matrix[idx][0] = min(val_acc)
         acc_matrix[idx][1] = max(val_acc)
