@@ -6,6 +6,7 @@
 
 import time
 import numpy as np
+import random as rn
 from deeplearning_kandidat_data import normalizer as norm
 import copy
 from keras.models import load_model
@@ -44,13 +45,6 @@ def custom_loss_laplace(s):
 
 
 def custom_loss_normal(s):
-    def loss_normal(y_true, y_pred):
-        loss = K.square(y_true - y_pred)
-        loss = K.exp(-s) * loss
-        loss = s + loss
-        loss = K.mean(loss)
-
-        return loss
     return loss_normal
 # *******************
 
@@ -98,9 +92,9 @@ def validate_nn(model_fcn=None,
             tr_size = train_size[i]
             te_size = test_size[i]
             # ***************** Normalize data *******************
-            np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
-            random_users = np.random.randint(0, course_data.shape[0] - te_size, size=course_data.shape[0] - te_size)  # Shuffle data
-
+            rn.seed(seed)  # Set a seed for randomization - to control output of np.random
+            #random_users = np.random.randint(0, course_data.shape[0] - te_size, size=course_data.shape[0] - te_size)  # Shuffle data
+            random_users = rn.sample(range(0, course_data.shape[0] - te_size), course_data.shape[0] - te_size)  # Shuffle data
             # ******* Results data ******
             course_results = results[i]
             # Results are the same for multi input and regular input NN
@@ -177,8 +171,12 @@ def validate_nn(model_fcn=None,
                             epochs=epochs,
                             batch_size=batch_size,
                             verbose=0)
+        # **** DEBUG
+        #print(out.history.keys())
+        # ****
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
+
 
         acc_matrix[idx][0] = min(val_acc)
         acc_matrix[idx][1] = max(val_acc)
