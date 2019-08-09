@@ -72,10 +72,10 @@ def validate_model(model_fcn=None,
                                                                                     problem_type=problem_type,
                                                                                     seed=seed)
             # Concatenate to tuples
-            x_train_tuple = x_train_tuple + x_train
-            y_train_tuple = y_train_tuple + y_train
-            x_val_tuple = x_val_tuple + x_val
-            y_val_tuple = y_val_tuple + y_val
+            x_train_tuple = x_train_tuple + (x_train,)
+            y_train_tuple = y_train_tuple + (y_train,)
+            x_val_tuple = x_val_tuple + (x_val,)
+            y_val_tuple = y_val_tuple + (y_val,)
 
         # Concatenate all tensors in the tuples
         x_train = np.concatenate(x_train_tuple, axis=0)
