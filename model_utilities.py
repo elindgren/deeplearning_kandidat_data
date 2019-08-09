@@ -122,12 +122,12 @@ def validate_model(model_fcn=None,
     # Print results
     print('********************** RESULTS ************************')
     print('Number of Seeds: ' + str(len(seeds)))
-    print('**************** Model: ' + keras_parameters['model_name'] + ' parameters ****************')
-    print('Epochs: ' + keras_parameters['epochs'])
-    print('Batch size: ' + keras_parameters['batch_size'])
-    print('Loss function: ' + keras_parameters['loss_function'])
-    print('Optimizer function: ' + keras_parameters['optimizer_function'])
-    print('**************** Model: ' + keras_parameters['model_name'] + ' results ****************')
+    print('**************** Model: ' + str(keras_parameters['model_name']) + ' parameters ****************')
+    print('Epochs: ' + str(keras_parameters['epochs']))
+    print('Batch size: ' + str(keras_parameters['batch_size']))
+    print('Loss function: ' + str(keras_parameters['loss_function']))
+    print('Optimizer function: ' + str(keras_parameters['optimizer_function']))
+    print('**************** Model: ' + str(keras_parameters['model_name']) + ' results ****************')
 
     print('\tMax validation acc (mean +-std, median): ' + str(val_acc_max_mean) + ' +- ' + str(
         val_acc_max_std) + ', median: ' + str(val_acc_max_median))
