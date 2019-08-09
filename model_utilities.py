@@ -60,14 +60,14 @@ def validate_model(model_fcn=None,
         # iterate over courses in input data
         for course in data:
             # Copy data and results
-            copy_data = np.copy(course['input_data'])
-            copy_result = np.copy(course['result_data'])
+            copy_data = np.copy(data[course]['input_data'])
+            copy_result = np.copy(data[course]['result_data'])
             # Generate fit data
             x_train, y_train, x_val, y_val, x_test, y_test, _, _ = gen_fit_data(input_data=copy_data,
                                                                                     input_results=copy_result,
-                                                                                    grade_points=course['grade_points'],
-                                                                                    train_size=course['train_size'],
-                                                                                    test_size=course['test_size'],
+                                                                                    grade_points=data[course]['grade_points'],
+                                                                                    train_size=data[course]['train_size'],
+                                                                                    test_size=data[course]['test_size'],
                                                                                     data_type=data_type,
                                                                                     problem_type=problem_type,
                                                                                     seed=seed,
