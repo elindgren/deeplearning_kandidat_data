@@ -7,7 +7,7 @@
 import time
 import numpy as np
 import random as rn
-import copy
+import sys
 
 from keras.models import load_model
 from keras.layers import Dense, Flatten, LSTM
@@ -149,7 +149,6 @@ def gen_fit_data(input_data=[],
                  seed=100,
                  data_type='subtask',
                  problem_type='UG',
-                 normalize_results=True,
                  grade_points=[]):
 
     data = np.copy(input_data)
@@ -171,15 +170,13 @@ def gen_fit_data(input_data=[],
     # ******* Results data ******
     # Results are the same for multi input and regular input NN
     shuffled_float_results = results[random_users]
-    if normalize_results:
-        if problem_type == 'U5':
-            norm_float_results = normalize_results_u5(shuffled_float_results, grade_points)
-        elif problem_type == 'UG':
-            norm_float_results = normalize_results(shuffled_float_results, grade_points[0])
-        else:
-            sys.exit("Incorrect problem_type")
+
+    if problem_type == 'U5':
+        norm_float_results = normalize_results_u5(shuffled_float_results, grade_points)
+    elif problem_type == 'UG':
+        norm_float_results = normalize_results(shuffled_float_results, grade_points[0])
     else:
-        norm_float_results = shuffled_float_results
+        sys.exit("Incorrect problem_type")
     y_val = norm_float_results[train_size:]
     y_train = norm_float_results[:train_size]
 
