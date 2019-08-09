@@ -56,7 +56,7 @@ def validate_model(model_fcn=None,
     # Iterate over seeds
     for idx, seed in enumerate(tqdm(seeds)):
         # Tuple that will contain training and validation data
-        x_train_tuple = (), y_train_tuple = (), x_val_tuple = (), y_val_tuple = ()
+        x_train_tuple, y_train_tuple, x_val_tuple, y_val_tuple = (), (), (), ()
         # iterate over courses in input data
         for course in data:
             # Copy data and results
