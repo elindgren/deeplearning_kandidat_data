@@ -23,7 +23,7 @@ from keras import backend as K
 from tqdm import tqdm_notebook as tqdm
 
 
-def validate_model(model=None,
+def validate_model(model_fcn=None,
                     seeds=[],
                     data = {},
                     data_type='subtask',
