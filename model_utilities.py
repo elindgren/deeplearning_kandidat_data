@@ -7,6 +7,7 @@
 import time
 import numpy as np
 import random as rn
+import matplotlib.pyplot as plt
 import sys
 
 from keras.models import load_model
@@ -138,6 +139,10 @@ def validate_model(model_fcn=None,
         val_loss_max_std) + ', median: ' + str(val_loss_max_median))
     print('\tMin validation loss (mean +-std, median): ' + str(val_loss_min_mean) + ' +- ' + str(
         val_loss_min_std) + ', median: ' + str(val_loss_min_median))
+
+    # Plot histogram of accuracies
+    plt.hist(acc_matrix[:,1])
+
     print('****************************************************')
 
 
