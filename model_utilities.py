@@ -70,8 +70,7 @@ def validate_model(model_fcn=None,
                                                                                     test_size=data[course]['test_size'],
                                                                                     data_type=data_type,
                                                                                     problem_type=problem_type,
-                                                                                    seed=seed,
-                                                                                    normalize_results=True)
+                                                                                    seed=seed)
             # Concatenate to tuples
             x_train_tuple = x_train_tuple + x_train
             y_train_tuple = y_train_tuple + y_train
