@@ -59,10 +59,13 @@ def validate_model(model_fcn=None,
         x_train_tuple = (), y_train_tuple = (), x_val_tuple = (), y_val_tuple = ()
         # iterate over courses in input data
         for course in data:
+            # Copy data and results
+            copy_data = np.copy(course['input_data'])
+            copy_result = np.copy(course['result_data'])
             # Generate fit data
-            x_train, y_train, x_val, y_val, x_test, y_test, _, _ = gen_fit_data(input_data=course['input_data'],
-                                                                                    input_results=course['result_data'],
-                                                                                    grade_ponts=course['grade_points'],
+            x_train, y_train, x_val, y_val, x_test, y_test, _, _ = gen_fit_data(input_data=copy_data,
+                                                                                    input_results=copy_result,
+                                                                                    grade_points=course['grade_points'],
                                                                                     train_size=course['train_size'],
                                                                                     test_size=course['test_size'],
                                                                                     data_type=data_type,
@@ -120,12 +123,12 @@ def validate_model(model_fcn=None,
     # Print results
     print('********************** RESULTS ************************')
     print('Number of Seeds: ' + str(len(seeds)))
-    print('**************** Model: ' + model_name + ' parameters ****************')
+    print('**************** Model: ' + keras_parameters['model_name'] + ' parameters ****************')
     print('Epochs: ' + keras_parameters['epochs'])
     print('Batch size: ' + keras_parameters['batch_size'])
     print('Loss function: ' + keras_parameters['loss_function'])
     print('Optimizer function: ' + keras_parameters['optimizer_function'])
-    print('**************** Model: ' + model_name + ' results ****************')
+    print('**************** Model: ' + keras_parameters['model_name'] + ' results ****************')
 
     print('\tMax validation acc (mean +-std, median): ' + str(val_acc_max_mean) + ' +- ' + str(
         val_acc_max_std) + ', median: ' + str(val_acc_max_median))
