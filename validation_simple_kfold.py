@@ -20,35 +20,6 @@ from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 from keras.callbacks import Callback
 from keras import backend as K
 
-
-# Simons' losses **********
-def loss_laplace(y_true, y_pred):
-    loss = K.abs(y_true - y_pred)
-    loss = K.exp(-s) * loss
-    loss = s + loss
-    loss = K.mean(loss)
-
-    return loss
-
-
-def loss_normal(y_true, y_pred):
-    loss = K.square(y_true - y_pred)
-    loss = K.exp(-s) * loss
-    loss = s + loss
-    loss = K.mean(loss)
-
-    return loss
-
-
-def custom_loss_laplace(s):
-    return loss_laplace
-
-
-def custom_loss_normal(s):
-    return loss_normal
-# *******************
-
-
 def validate_nn(model_fcn=None,
                 seeds=[],
                 input_data=[[]],
@@ -176,7 +147,6 @@ def validate_nn(model_fcn=None,
         # ****
         val_acc = out.history['val_acc']
         val_loss = out.history['val_loss']
-        print(val_acc)
 
         acc_matrix[idx][0] = min(val_acc)
         acc_matrix[idx][1] = max(val_acc)
@@ -266,7 +236,7 @@ def validate_aleatoric(model_fcn=None,
         te_size = test_size
         # ***************** Normalize data *******************
         np.random.seed(seed)  # Set a seed for randomization - to control output of np.random
-        random_users = np.random.randint(0, data.shape[0] - te_size, size=data.shape[0] - te_size)  # Shuffle data
+        random_users = rn.sample(range(0, data.shape[0] - te_size), data.shape[0] - te_size)  # Shuffle data
 
         # ******* Results data ******
         # Shuffle
